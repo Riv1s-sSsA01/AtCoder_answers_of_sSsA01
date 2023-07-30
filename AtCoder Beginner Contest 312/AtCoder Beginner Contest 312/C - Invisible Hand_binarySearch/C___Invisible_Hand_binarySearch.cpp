@@ -165,9 +165,9 @@ private:
 
 		Value lower = 1;
 		Value upper = 1000000000;
-		while (true) {
-			const auto value = (lower + upper) / 2;
 
+		const auto IsOk = [&](Value value)
+		{
 			const auto seller = std::upper_bound(
 				std::cbegin(input.sellValues), std::cend(input.sellValues),
 				value
@@ -179,15 +179,15 @@ private:
 			const auto sellerCount = std::distance(std::cbegin(input.sellValues), seller);
 			const auto  buyerCount = std::distance(std::crbegin(input.buyValues), buyer);
 
-			const auto isOk = sellerCount >= buyerCount;
-			if (upper <= lower + 1) {
-				solution.value = (isOk ? lower : upper);
-				return;
-			}
-			else {
-				(isOk ? upper : lower) = value;
-			}
+			return sellerCount >= buyerCount;
+		};
+
+		while (upper > lower + 1) {
+			const auto value = (lower + upper) / 2;
+			(IsOk(value) ? upper : lower) = value;
 		}
+
+		solution.value = IsOk(lower) ? lower : upper;
 	}
 };
 
